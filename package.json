@@ -29,6 +29,6 @@
   },  
   "bundleDependencies": false,
   "keywords": [
-    "cordova-android",
-]
+    "cordova-android"
+  ]
 }

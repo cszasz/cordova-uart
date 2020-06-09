@@ -2,7 +2,7 @@
 
 <plugin xmlns="http://www.phonegap.com/ns/plugins/1.0"
     id="com.zenology.uart"
-    version="0.0.1">
+    version="1.0.1">
     <name>UART</name>
     <description>Cordova plugin to communicate with the android peripheral devices</description>
     <license>MIT</license>
@@ -20,6 +20,9 @@
                 <param name="android-package" value="com.zenology.uart.UART"/>
             </feature>
         </config-file>
+		<config-file target="AndroidManifest.xml" parent="/manifest">
+		  <uses-permission android:name="com.google.android.things.permission.USE_PERIPHERAL_IO" />
+		</config-file>
         <source-file src="src/android/com/zenology/uart/UART.java" target-dir="src/com/zenology/uart" />
     </platform>
 </plugin>
