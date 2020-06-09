@@ -1,6 +1,6 @@
 {
   "name": "com.zenology.uart",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "description": "Cordova plugin to communicate with android peripheral devices.",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"
@@ -26,5 +26,9 @@
     "platforms": [
       "android"
     ]
-  }
+  },  
+  "bundleDependencies": false,
+  "keywords": [
+    "cordova-android",
+]
 }
