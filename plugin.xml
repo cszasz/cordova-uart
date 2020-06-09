@@ -2,7 +2,7 @@
 
 <plugin xmlns="http://www.phonegap.com/ns/plugins/1.0"
     id="com.zenology.uart"
-    version="1.0.2">
+    version="1.0.">
     <name>UART</name>
     <description>Cordova plugin to communicate with the android peripheral devices</description>
     <license>MIT</license>
@@ -24,6 +24,6 @@
 		  <uses-permission android:name="com.google.android.things.permission.USE_PERIPHERAL_IO" />
 		</config-file>
         <source-file src="src/android/com/zenology/uart/UART.java" target-dir="src/com/zenology/uart" />
-		<framework src="com.google.android.things" custom="true" type="gradleReference" />
+		<framework src="com.google.android.things:androidthings:+" />
     </platform>
 </plugin>
