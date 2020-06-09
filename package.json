@@ -1,0 +1,30 @@
+{
+  "name": "com.zenology.uart",
+  "version": "1.0.0",
+  "description": "Cordova plugin to communicate with android peripheral devices.",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/yuyenkan/cordova-uart.git"
+  },
+  "keywords": [
+    "ionic",
+    "cordova",
+    "serial",
+    "uart"
+  ],
+  "author": "Yu Yen Kan",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/yuyenkan/cordova-uart/issues"
+  },
+  "homepage": "https://github.com/yuyenkan/cordova-uart#readme",
+  "cordova": {
+    "id": "com.zenology.uart",
+    "platforms": [
+      "android"
+    ]
+  }
+}
