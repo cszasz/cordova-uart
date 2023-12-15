@@ -8,7 +8,7 @@ module.exports = {
             errorCallback,
             'UART',
             'list',
-            []
+            [{'opts': {}}]
         );
     },
 	open: function(opts, successCallback, errorCallback) {
