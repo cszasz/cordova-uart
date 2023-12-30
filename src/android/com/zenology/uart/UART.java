@@ -77,16 +77,12 @@ public class UART extends CordovaPlugin {
     private void list(CallbackContext callbackContext) {
         cordova.getThreadPool().execute(() -> {
             try {
-                int port = 3;
                 for (int p=3; p<8; p++) {
-                    String uartPortPath = "/dev/ttyS" + port; // Example path for a built-in UART port
+                    String uartPortPath = "/dev/ttyS" + p; // Example path for a built-in UART port
                     java.io.File uartPort = new java.io.File(uartPortPath);
-
-                    //FileInputStream inputStream = new FileInputStream(uartPort);
-                    try (java.io.FileOutputStream outputStream = new java.io.FileOutputStream(uartPort)) {
+                    if (uartPort.exists() {
                         callbackContext.success(uartPortPath);
-                    } catch (Exception ex) {
-
+                        return;
                     }
                 }
                 callbackContext.error("No serial port found");
