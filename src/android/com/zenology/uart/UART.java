@@ -1,6 +1,10 @@
 package com.zenology.uart;
 
+import android.Manifest;
+import android.content.pm.PackageManager;
 import android.util.Log;
+
+import androidx.core.app.ActivityCompat;
 
 import com.google.android.things.pio.PeripheralManager;
 import com.google.android.things.pio.UartDevice;
@@ -12,6 +16,7 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.List;
 
 public class UART extends CordovaPlugin {
@@ -77,12 +82,17 @@ public class UART extends CordovaPlugin {
     private void list(CallbackContext callbackContext) {
         cordova.getThreadPool().execute(() -> {
             try {
+
+                int port = 3;
                 for (int p=3; p<8; p++) {
                     String uartPortPath = "/dev/ttyS" + p; // Example path for a built-in UART port
                     java.io.File uartPort = new java.io.File(uartPortPath);
-                    if (uartPort.exists() {
+
+                    //FileInputStream inputStream = new FileInputStream(uartPort);
+                    try (java.io.FileOutputStream outputStream = new java.io.FileOutputStream(uartPort)) {
                         callbackContext.success(uartPortPath);
-                        return;
+                    } catch (Exception ex) {
+
                     }
                 }
                 callbackContext.error("No serial port found");
@@ -112,20 +122,67 @@ public class UART extends CordovaPlugin {
         });
     }
 
+    private static final int REQUEST_EXTERNAL_STORAGE = 1;
+    private static String[] PERMISSIONS_STORAGE = {
+            Manifest.permission.READ_EXTERNAL_STORAGE,
+            Manifest.permission.WRITE_EXTERNAL_STORAGE
+    };
+
+    public static List<byte[]> splitByCRLF(byte[] data) {
+        List<byte[]> result = new ArrayList<>();
+
+        int start = 0;
+
+        for (int i = 0; i < data.length - 1; i++) {
+            // Check for the \r\n sequence
+            if (data[i] == '\r' && data[i + 1] == '\n') {
+                // Extract the segment
+                int length = i - start;
+                byte[] segment = new byte[length];
+                System.arraycopy(data, start, segment, 0, length);
+
+                // Add the segment to the result list
+                result.add(segment);
+
+                // Skip the \r\n
+                i++;
+                start = i + 1;
+            }
+        }
+
+        // Add the last segment if there's any remaining data
+        if (start < data.length) {
+            int length = data.length - start;
+            byte[] segment = new byte[length];
+            System.arraycopy(data, start, segment, 0, length);
+            result.add(segment);
+        }
+
+        return result;
+    }
+
     private void write(CallbackContext callbackContext, JSONObject obj) {
         cordova.getThreadPool().execute(() -> {
             try {
+                String buff = obj.optString("text", "");
                 byte[] buffer = obj.optString("text", "").getBytes();
 
                 String uartPortPath = obj.optString("dev", "/dev/ttyS7"); // Example path for a built-in UART port
                 java.io.File uartPort = new java.io.File(uartPortPath);
-
-                //FileInputStream inputStream = new FileInputStream(uartPort);
-                try (java.io.FileOutputStream outputStream = new java.io.FileOutputStream(uartPort)) {
-                    outputStream.write(buffer);
-                    callbackContext.success("Write to "+uartPortPath);
+                try {
+                    //FileInputStream inputStream = new FileInputStream(uartPort);
+                    for (byte[] bytes : splitByCRLF(buffer)) {
+                        try (java.io.FileOutputStream outputStream = new java.io.FileOutputStream(uartPort)) {
+                            outputStream.write(bytes);
+                            outputStream.write(0x0a);
+                            outputStream.flush();
+                            //Thread.sleep(2000);
+                        }
+                    }
+                   //Thread.sleep(15000);
+                   callbackContext.success("Write to "+uartPortPath+" text:"+buff+" -> "+new String(buffer)+" -> "+bytesToHex(buffer));
                 } catch (Exception ex) {
-                    callbackContext.error((ex.getMessage()));
+                    callbackContext.error((ex.getMessage()+" text:"+buff+" -> "+new String(buffer)+" -> "+bytesToHex(buffer)));
                 }
                 Log.d(TAG, "Wrote to peripheral "+uartPortPath);
             } catch (Exception ex) {
@@ -133,6 +190,14 @@ public class UART extends CordovaPlugin {
             }
         });
     }
+    public static String bytesToHex(byte[] bytes) {
+        StringBuilder sb = new StringBuilder();
+        for (byte b : bytes) {
+            sb.append(String.format("%02X", b));
+        }
+        return sb.toString();
+    }
+
 
     private void close(CallbackContext callbackContext) {
         cordova.getThreadPool().execute(() -> {
